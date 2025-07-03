@@ -2,7 +2,7 @@ import pygame
 from manager.fonts import FontManager
 from manager.sounds import SoundManager
 from background import GameBackground
-from settings import GameSettings
+from manager.settings import SettingsManager
         
 pygame.init()
 
@@ -15,7 +15,7 @@ class Game:
         self.is_running = True
         self.clock = pygame.time.Clock()
         self.font_manager = FontManager()
-        self.settings = GameSettings()
+        self.settings = SettingsManager()
         self.sound_manager = SoundManager(self.settings)
         self.background = GameBackground(self.display)
         self.__current_screen: GameScreen = MainMenuScreen(self, INITIAL_MAIN_MENU_TRANSITION_DELAY)
@@ -27,7 +27,7 @@ class Game:
             self.__music_tick_delay_left -= 1
         elif (self.__music_tick_delay_left == 0):
             self.__music_tick_delay_left = -1
-            self.sound_manager.play_music(fade_ms=500)
+            self.sound_manager.play_music()
 
     def run(self):
         while self.is_running:
@@ -57,7 +57,7 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.is_running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not self.__current_screen.is_transitioning():
                 self.__current_screen.on_click()
                 
     def switch_screen(self, screen: "GameScreen"):
@@ -65,7 +65,8 @@ class Game:
             self.__current_screen.hide()
             self.__next_screen = screen
         else:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
             self.__current_screen = screen
         
 from screen.base import GameScreen
-from screen.main_menu import MainMenuScreen
+from screen.main_menu_screen import MainMenuScreen
