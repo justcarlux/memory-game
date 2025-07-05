@@ -3,7 +3,7 @@ from util.asset_paths import image_path
 from screen.base import GameScreen
 from game import Game, GameScreen
 from screen.options_screen import OptionsScreen
-from screen.components import Button
+from screen.component.button import Button, Alignment
 
 ENTER_TRANSITION_TOTAL_TICKS = 50
 ENTER_TRANSITION_STEP = 12
@@ -56,28 +56,28 @@ class MainMenuTitle:
 
 class MainMenuPlayButton(Button):
     def __init__(self, screen: MainMenuScreen):
-        super().__init__(screen, "Jugar") 
+        super().__init__(screen, "Jugar", Alignment.CENTER) 
         
     def on_click(self):
         print("Play game")
         
 class MainMenuTimeTrialButton(Button):
     def __init__(self, screen: MainMenuScreen):
-        super().__init__(screen, "Contrarreloj") 
+        super().__init__(screen, "Contrarreloj", Alignment.CENTER) 
         
     def on_click(self):
         print("Time trial")
         
 class MainMenuSettingsButton(Button):
     def __init__(self, screen: MainMenuScreen):
-        super().__init__(screen, "Opciones") 
+        super().__init__(screen, "Opciones", Alignment.CENTER) 
         
     def on_click(self):
         self.screen.game.switch_screen(OptionsScreen(self.screen.game))
         
 class MainMenuExitButton(Button):
     def __init__(self, screen: MainMenuScreen):
-        super().__init__(screen, "Salir") 
+        super().__init__(screen, "Salir", Alignment.CENTER) 
         
     def on_click(self):
         self.screen.game.stop()

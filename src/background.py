@@ -6,11 +6,11 @@ ENTER_TRANSITION_DELAY = 5
 ENTER_TRANSITION_TOTAL_TICKS = 50
 
 class GameBackground:
-    def __init__(self, surface: pygame.Surface):
+    def __init__(self, surface: pygame.Surface, should_transition: bool):
         self.surface = surface
         self.image = pygame.image.load(image_path("background.png"))
-        self.__transition_delay = ENTER_TRANSITION_DELAY + 1
-        self.__transition_left_ticks = ENTER_TRANSITION_TOTAL_TICKS + 1
+        self.__transition_delay = ENTER_TRANSITION_DELAY + 1 if should_transition else 0
+        self.__transition_left_ticks = ENTER_TRANSITION_TOTAL_TICKS + 1 if should_transition else 0
         
     def transition_alpha(self):
         if (self.__transition_delay > 0):

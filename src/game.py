@@ -1,4 +1,5 @@
 import pygame
+from storage import StorageDriver
 from manager.fonts import FontManager
 from manager.sounds import SoundManager
 from background import GameBackground
@@ -8,19 +9,21 @@ pygame.init()
 
 INITIAL_MUSIC_DELAY = 40
 INITIAL_MAIN_MENU_TRANSITION_DELAY = 20
-        
+
 class Game:
     def __init__(self):
         self.display = pygame.display.set_mode((900, 650))
         self.is_running = True
         self.clock = pygame.time.Clock()
+        self.storage = StorageDriver()
+        self.storage.init()
         self.font_manager = FontManager()
-        self.settings = SettingsManager()
+        self.settings = SettingsManager(self.storage)
         self.sound_manager = SoundManager(self.settings)
-        self.background = GameBackground(self.display)
-        self.__current_screen: GameScreen = MainMenuScreen(self, INITIAL_MAIN_MENU_TRANSITION_DELAY)
+        self.background = GameBackground(self.display, self.settings.transitions_enabled)
+        self.__current_screen: GameScreen = MainMenuScreen(self, INITIAL_MAIN_MENU_TRANSITION_DELAY if self.settings.transitions_enabled else 0)
         self.__next_screen: GameScreen | None = None
-        self.__music_tick_delay_left = INITIAL_MUSIC_DELAY
+        self.__music_tick_delay_left = INITIAL_MUSIC_DELAY if self.settings.music_enabled else -1
         
     def handle_initial_music_playback(self):
         if (self.__music_tick_delay_left > 0):
@@ -51,6 +54,7 @@ class Game:
             self.__next_screen = None
 
     def stop(self):
+        self.storage.close()
         self.is_running = False
             
     def handle_events(self):

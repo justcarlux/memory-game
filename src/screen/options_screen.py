@@ -2,7 +2,8 @@ import pygame
 from util.asset_paths import image_path
 from screen.base import GameScreen
 from game import Game, GameScreen
-from screen.components import Checkbox, Button
+from screen.component.button import Button, Alignment
+from screen.component.checkbox import Checkbox
 
 ENTER_TRANSITION_TOTAL_TICKS = 50
 ENTER_TRANSITION_STEP = 12
@@ -22,7 +23,7 @@ class OptionsTitle:
         
 class OptionsMusicCheckbox(Checkbox):
     def __init__(self, screen: "OptionsScreen"):
-        super().__init__(screen, "Musica")
+        super().__init__(screen, "Música", Alignment.LEFT)
         
     def is_checked(self):
         return self.screen.game.settings.music_enabled
@@ -36,7 +37,7 @@ class OptionsMusicCheckbox(Checkbox):
         
 class OptionsSFXCheckbox(Checkbox):
     def __init__(self, screen: "OptionsScreen"):
-        super().__init__(screen, "SFX")
+        super().__init__(screen, "SFX", Alignment.LEFT)
         
     def is_checked(self):
         return self.screen.game.settings.sfx_enabled
@@ -46,7 +47,7 @@ class OptionsSFXCheckbox(Checkbox):
         
 class OptionsTransitionsCheckbox(Checkbox):
     def __init__(self, screen: "OptionsScreen"):
-        super().__init__(screen, "Transiciones")
+        super().__init__(screen, "Transiciones", Alignment.LEFT)
         
     def is_checked(self):
         return self.screen.game.settings.transitions_enabled
@@ -56,13 +57,13 @@ class OptionsTransitionsCheckbox(Checkbox):
         
 class OptionsBackButton(Button):
     def __init__(self, screen: "OptionsScreen"):
-        super().__init__(screen, "Regresar")
+        super().__init__(screen, "Regresar", Alignment.CENTER)
         
     def on_click(self):
         from screen.main_menu_screen import MainMenuScreen
         self.screen.game.switch_screen(MainMenuScreen(self.screen.game))
 
-BUTTON_WIDTH = 280
+BUTTON_WIDTH = 310
 BUTTON_HEIGHT = 60
 
 class OptionsInputGroup():
