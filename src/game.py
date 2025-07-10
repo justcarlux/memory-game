@@ -16,7 +16,6 @@ class Game:
         self.is_running = True
         self.clock = pygame.time.Clock()
         self.storage = StorageDriver()
-        self.storage.init()
         self.font_manager = FontManager()
         self.settings = SettingsManager(self.storage)
         self.sound_manager = SoundManager(self.settings)

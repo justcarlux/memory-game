@@ -6,8 +6,6 @@ DB_FILE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__fi
 class StorageDriver:
     def __init__(self, path: str = DB_FILE_PATH):  
         self.conn = sqlite3.connect(path)
-        
-    def init(self):
         with self.conn:
             self.conn.execute("""
                 CREATE TABLE IF NOT EXISTS settings (
