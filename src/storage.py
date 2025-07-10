@@ -13,7 +13,7 @@ class StorageDriver:
                 CREATE TABLE IF NOT EXISTS settings (
                     name TEXT PRIMARY KEY,
                     value INTEGER,
-                    UNIQUE(name, value)
+                    UNIQUE(name)
                 )
             """)
     
