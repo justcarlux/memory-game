@@ -55,6 +55,7 @@ class Button(ABC):
         
     def on_screen_click(self):
         if (self.rect.collidepoint(pygame.mouse.get_pos())):
+            self.screen.game.sound_manager.play_sfx("click")
             self.on_click()
         
     @abstractmethod
