@@ -4,6 +4,7 @@ from screen.base import GameScreen
 from game import Game, GameScreen
 from screen.options_screen import OptionsScreen
 from screen.component.button import Button, Alignment
+from screen.in_game_screen import InGameScreen
 
 ENTER_TRANSITION_TOTAL_TICKS = 50
 ENTER_TRANSITION_STEP = 12
@@ -59,7 +60,7 @@ class MainMenuPlayButton(Button):
         super().__init__(screen, "Jugar", Alignment.CENTER) 
         
     def on_click(self):
-        print("Play game")
+        self.screen.game.switch_screen(InGameScreen(self.screen.game))
         
 class MainMenuTimeTrialButton(Button):
     def __init__(self, screen: MainMenuScreen):
