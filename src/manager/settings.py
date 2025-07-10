@@ -6,9 +6,6 @@ class SettingsManager:
         self.music_enabled = storage.get_setting("music_enabled", True)
         self.sfx_enabled = storage.get_setting("sfx_enabled", True)
         self.transitions_enabled = storage.get_setting("transitions_enabled", True)
-        print("music enabled:", self.music_enabled)
-        print("sfx enabled:", self.sfx_enabled)
-        print("transitions enabled:", self.transitions_enabled)
         
     def toggle_music(self):
         self.music_enabled = not self.music_enabled
