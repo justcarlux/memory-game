@@ -179,17 +179,19 @@ class InGameCardGroup:
             self.screen.timer_active = False
             self.interactive = False
             self.reset_cards_ticks = 200
+            self.screen.level += 1
             self.screen.add_points()
 
 class InGameInfoDisplay:
     def __init__(self, screen: "InGameScreen"):
         self.screen = screen
-        self.font = screen.game.font_manager.get("comfortaa-bold", 25)
+        self.font = screen.game.font_manager.get("comfortaa-bold", 22)
 
     def draw(self, y_offset: float):
         self.__update_info()
-        self.__draw_centered_text(self.time_left, 30 + y_offset)
-        self.__draw_centered_text(self.points, 60 + y_offset)
+        self.__draw_centered_text(self.time_left, 20 + y_offset)
+        self.__draw_centered_text(self.points, 45 + y_offset)
+        self.__draw_centered_text(self.level, 70 + y_offset)
 
     def __draw_centered_text(self, label: str, y: float):
         text = self.font.render(label, True, (255, 255, 255))
@@ -201,6 +203,7 @@ class InGameInfoDisplay:
         time_left_seconds = self.screen.time_left - (time_left_minutes * 60)
         self.time_left = f"{str.rjust(str(time_left_minutes), 2, "0")}:{str.rjust(str(time_left_seconds), 2, "0")}"
         self.points = f"Puntos: {self.screen.points}"
+        self.level = f"Nivel: {self.screen.level}"
 
 class InGameDifficulty(Enum):
     EASY = (1, 1.0, 3, 4, 120, 220) 
@@ -241,6 +244,7 @@ class InGameScreen(GameScreen):
             pygame.Rect(game.display.get_width() / 2 - back_button_width / 2, 563, back_button_width, 60)
         )
         self.points = 0
+        self.level = 1
         self.time_left = difficulty.game_time
         self.elapsed_time = 0
         self.timer_active = False
