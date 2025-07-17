@@ -1,6 +1,6 @@
 import os
 
-ASSETS_ROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "..", "assets")
+ASSETS_ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "..", "assets"))
 
 def image_path(name: str):
     return os.path.join(ASSETS_ROOT, "images", name)
