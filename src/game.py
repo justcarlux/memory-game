@@ -2,7 +2,7 @@ import pygame
 from storage import StorageDriver
 from manager.fonts import FontManager
 from manager.sounds import SoundManager
-from background import GameBackground
+from screen.component.background import GameBackground
 from manager.settings import SettingsManager
         
 INITIAL_MUSIC_DELAY = 40
@@ -58,7 +58,7 @@ class Game:
     def handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.is_running = False
+                self.stop()
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not self.__current_screen.is_transitioning():
                 self.__current_screen.on_click()
                 

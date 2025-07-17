@@ -37,21 +37,21 @@ class GameDifficultyEasyButton(Button):
         super().__init__(screen, "Fácil", Alignment.CENTER) 
         
     def on_click(self):
-        self.screen.game.switch_screen(InGameScreen(self.screen.game, 3, 4))
+        self.screen.game.switch_screen(InGameScreen(self.screen.game, 3, 4, 0))
         
 class GameDifficultyMediumButton(Button):
     def __init__(self, screen: GameDifficultyScreen):
-        super().__init__(screen, "Medio", Alignment.CENTER) 
+        super().__init__(screen, "Medio", Alignment.CENTER)
         
     def on_click(self):
-        self.screen.game.switch_screen(InGameScreen(self.screen.game, 4, 6))
+        self.screen.game.switch_screen(InGameScreen(self.screen.game, 4, 7, 0))
         
 class GameDifficultyHardButton(Button):
     def __init__(self, screen: GameDifficultyScreen):
         super().__init__(screen, "Difícil", Alignment.CENTER) 
         
     def on_click(self):
-        self.screen.game.switch_screen(InGameScreen(self.screen.game, 3, 6))
+        self.screen.game.switch_screen(InGameScreen(self.screen.game, 5, 8, 0))
         
 BUTTON_WIDTH = 250
 BUTTON_HEIGHT = 60
