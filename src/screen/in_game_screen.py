@@ -5,7 +5,7 @@ from util.asset_paths import image_path
 from screen.base import GameScreen
 from game import Game, GameScreen
 from util.easing import ease_in_out_cubic
-from screen.component.back_to_main_menu_button import BackToMainMenuButton
+from screen.component.button import Button, Alignment
 from game import GAME_TIMER_EVENT
 from screen.time_out_screen import TimeOutScreen
 
@@ -214,6 +214,19 @@ class InGameDifficulty(Enum):
         self.columns = columns
         self.game_time = game_time
         self.card_display_time = card_display_time
+        
+class BackToMainMenuButton(Button):
+    def __init__(self, screen: "InGameScreen"):
+        super().__init__(screen, "Salir", Alignment.CENTER)
+        self.in_game_screen = screen
+        
+    def on_click(self):
+        stored_points = self.screen.game.storage.get_difficulty_record(self.in_game_screen.difficulty.value)
+        new_record = self.in_game_screen.points > stored_points
+        if (new_record):
+            self.screen.game.storage.set_difficulty_record(self.in_game_screen.difficulty.value, self.in_game_screen.points)
+        from screen.main_menu_screen import MainMenuScreen
+        self.screen.game.switch_screen(MainMenuScreen(self.screen.game))
 
 class InGameScreen(GameScreen):
     def __init__(self, game: Game, difficulty: InGameDifficulty):
@@ -222,7 +235,7 @@ class InGameScreen(GameScreen):
         self.card_group = InGameCardGroup(self, difficulty.rows, difficulty.columns)
         self.empty_card_image = pygame.image.load(image_path("empty_card.png"))
         self.card_display_time = difficulty.card_display_time
-        self.back_button = BackToMainMenuButton(self, "Salir")
+        self.back_button = BackToMainMenuButton(self)
         back_button_width = 250
         self.back_button.set_rect(
             pygame.Rect(game.display.get_width() / 2 - back_button_width / 2, 563, back_button_width, 60)
