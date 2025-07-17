@@ -1,12 +1,14 @@
 import pygame
 import random
+from enum import Enum
 from util.asset_paths import image_path
 from screen.base import GameScreen
 from game import Game, GameScreen
 from util.easing import ease_in_out_cubic
 from screen.component.back_to_main_menu_button import BackToMainMenuButton
+from game import GAME_TIMER_EVENT
 
-FLIPPING_PROGRESS_STEP = 4
+CARD_FLIPPING_PROGRESS_STEP = 4
 
 class InGameCard:
     def __init__(self, screen: "InGameScreen", identifier: str, width: int, height: int):
@@ -25,7 +27,7 @@ class InGameCard:
 
     def draw(self, y_offset: float):
         if (self.flipping_progress > 0):
-            self.flipping_progress -= FLIPPING_PROGRESS_STEP
+            self.flipping_progress -= CARD_FLIPPING_PROGRESS_STEP
         
         width_progress = self.flipping_progress - 50 if self.flipping_progress > 50 else 50 - self.flipping_progress
         progress = ease_in_out_cubic(width_progress / 50) * 100
@@ -77,6 +79,7 @@ class InGameCardGroup:
         self.found_pairs: list[str] = []
         self.queued_card_flip_ticks = -1
         self.cards_queued_for_flipping: list[str] = []
+        self.reset_cards_ticks = -1
 
     def __populate_cards(self):
         random.shuffle(AVAILABLE_CARDS) # mutating the original list is not a problem here
@@ -108,6 +111,14 @@ class InGameCardGroup:
             self.queued_card_flip_ticks = -1
             self.__flip_queued_cards()
 
+        if (self.reset_cards_ticks > 0):
+            self.reset_cards_ticks -= 1
+        if (self.reset_cards_ticks == 100):
+            self.flip_all()
+        if (self.reset_cards_ticks == 0):
+            self.reset_cards_ticks = -1
+            self.reset()
+
         is_mouse_hovering = False
         for card in self.cards:
             card.is_mouse_hovering = card.rect.collidepoint(pygame.mouse.get_pos()) if not self.screen.is_transitioning() and not card.is_flipped and not card.is_flipping() else False
@@ -116,12 +127,20 @@ class InGameCardGroup:
                 is_mouse_hovering = True
         self.is_mouse_hovering = is_mouse_hovering if not self.screen.is_transitioning() and self.interactive and len(self.get_selected_cards()) < 2 else False
         
+    def reset(self):
+        self.cards.clear()
+        self.__populate_cards()
+        self.__align_images_in_grid()
+        self.screen.card_display_time = self.screen.difficulty.card_display_time - 50
+        self.found_pairs.clear()
+        self.screen.elapsed_time = 0
+
     def on_click(self):
         if (not self.interactive or len(self.get_selected_cards()) >= 2): return
         for card in self.cards:
             card.on_screen_click()
         self.__queue_selected_flip_if_needed()
-        # self.check_for_game_win()
+        self.__check_for_win()
 
     def flip_all(self):
         for card in self.cards:
@@ -142,40 +161,95 @@ class InGameCardGroup:
             self.found_pairs.append(selected_cards[0])
         else:
             self.cards_queued_for_flipping = selected_cards
-            self.queued_card_flip_ticks = 35
+            self.queued_card_flip_ticks = 25
 
     def __flip_queued_cards(self):
         for card in self.cards:
             if (card.identifier in self.cards_queued_for_flipping and card.is_flipped):
                 card.flip()
 
+    def __check_for_win(self):
+        all_flipped = True
+        for card in self.cards:
+            if (not card.is_flipped):
+                all_flipped = False
+                break
+        if (all_flipped):
+            self.screen.timer_active = False
+            self.interactive = False
+            self.reset_cards_ticks = 200
+            self.screen.add_points()
+
+class InGameInfoDisplay:
+    def __init__(self, screen: "InGameScreen"):
+        self.screen = screen
+        self.font = screen.game.font_manager.get("comfortaa-bold", 25)
+
+    def draw(self):
+        self.__update_info()
+        self.__draw_centered_text(self.time_left, 30)
+        self.__draw_centered_text(self.points, 60)
+
+    def __draw_centered_text(self, label: str, y: int):
+        text = self.font.render(label, True, (255, 255, 255))
+        x = self.screen.game.display.get_width() / 2 - text.get_width() / 2
+        self.screen.game.display.blit(text, (x, y))
+
+    def __update_info(self):
+        time_left_minutes = self.screen.time_left // 60
+        time_left_seconds = self.screen.time_left - (time_left_minutes * 60)
+        self.time_left = f"{str.rjust(str(time_left_minutes), 2, "0")}:{str.rjust(str(time_left_seconds), 2, "0")}"
+        self.points = f"Puntos: {self.screen.points}"
+
+class InGameDifficulty(Enum):
+    EASY = (1, 1.0, 3, 4, 120, 220) 
+    MEDIUM = (2, 1.5, 4, 7, 150, 290)
+    HARD = (3, 2.0, 5, 8, 180, 400)
+
+    def __init__(self, value: int, multiplier: float, rows: int, columns: int, game_time: int, card_display_time: int):
+        self._value_ = value
+        self.multiplier = multiplier
+        self.rows = rows
+        self.columns = columns
+        self.game_time = game_time
+        self.card_display_time = card_display_time
+
 class InGameScreen(GameScreen):
-    def __init__(self, game: Game, rows: int, columns: int, initial_points: int):
+    def __init__(self, game: Game, difficulty: InGameDifficulty):
         super().__init__(game)
-        self.card_group = InGameCardGroup(self, rows, columns)
+        self.difficulty = difficulty
+        self.card_group = InGameCardGroup(self, difficulty.rows, difficulty.columns)
         self.empty_card_image = pygame.image.load(image_path("empty_card.png"))
-        self.initial_card_display_time = 250
-        self.initial_points = initial_points
-        self.back_button = BackToMainMenuButton(self)
+        self.card_display_time = difficulty.card_display_time
+        self.back_button = BackToMainMenuButton(self, "Salir")
+        back_button_width = 250
         self.back_button.set_rect(
-            pygame.Rect(game.display.get_width() / 2 - 125, 563, 250, 60)
+            pygame.Rect(game.display.get_width() / 2 - back_button_width / 2, 563, back_button_width, 60)
         )
+        self.points = 0
+        self.time_left = difficulty.game_time
+        self.elapsed_time = 0
+        self.timer_active = False
+        self.game_info_display = InGameInfoDisplay(self)
 
     def draw(self):
         current_y_offset = self.transition_offset()
         if (current_y_offset < -400 and self._hiding):
             self.hidden = True
             return
-        if (self.initial_card_display_time == 0):
-            self.initial_card_display_time = -1
+        if (self.card_display_time == 0):
+            self.card_display_time = -1
             self.card_group.flip_all()
             self.card_group.interactive = True
-        elif (self.initial_card_display_time == 190):
+            pygame.time.set_timer(GAME_TIMER_EVENT, millis=1000)
+            self.timer_active = True
+        elif (self.card_display_time == self.difficulty.card_display_time - 50):
             self.card_group.flip_all()
 
-        if (self.initial_card_display_time > 0):
-            self.initial_card_display_time -= 1
+        if (self.card_display_time > 0):
+            self.card_display_time -= 1
 
+        self.game_info_display.draw()
         self.card_group.draw(current_y_offset)
 
         self.back_button.is_mouse_hovering = self.back_button.rect.collidepoint(pygame.mouse.get_pos()) if not self.is_transitioning() else False
@@ -189,3 +263,13 @@ class InGameScreen(GameScreen):
     def on_click(self):
         self.card_group.on_click()
         self.back_button.on_screen_click()
+
+    def add_points(self):
+        print(self.elapsed_time)
+        base_points = max(0, self.difficulty.game_time - self.elapsed_time)
+        self.points += int(base_points * self.difficulty.multiplier)
+
+    def on_game_timer_tick(self):
+        if (self.timer_active):
+            self.time_left -= 1
+            self.elapsed_time += 1

@@ -2,7 +2,7 @@ import pygame
 from screen.base import GameScreen
 from game import Game, GameScreen
 from screen.component.button import Button, Alignment
-from screen.in_game_screen import InGameScreen
+from screen.in_game_screen import InGameScreen, InGameDifficulty
 from screen.component.game_title import GameTitleImage
 from screen.component.back_to_main_menu_button import BackToMainMenuButton
 from screen.component.image_wrappers import HorizontallyAlignedImage
@@ -37,21 +37,21 @@ class GameDifficultyEasyButton(Button):
         super().__init__(screen, "Fácil", Alignment.CENTER) 
         
     def on_click(self):
-        self.screen.game.switch_screen(InGameScreen(self.screen.game, 3, 4, 0))
+        self.screen.game.switch_screen(InGameScreen(self.screen.game, InGameDifficulty.EASY))
         
 class GameDifficultyMediumButton(Button):
     def __init__(self, screen: GameDifficultyScreen):
         super().__init__(screen, "Medio", Alignment.CENTER)
         
     def on_click(self):
-        self.screen.game.switch_screen(InGameScreen(self.screen.game, 4, 7, 0))
+        self.screen.game.switch_screen(InGameScreen(self.screen.game, InGameDifficulty.MEDIUM))
         
 class GameDifficultyHardButton(Button):
     def __init__(self, screen: GameDifficultyScreen):
         super().__init__(screen, "Difícil", Alignment.CENTER) 
         
     def on_click(self):
-        self.screen.game.switch_screen(InGameScreen(self.screen.game, 5, 8, 0))
+        self.screen.game.switch_screen(InGameScreen(self.screen.game, InGameDifficulty.HARD))
         
 BUTTON_WIDTH = 250
 BUTTON_HEIGHT = 60

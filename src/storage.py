@@ -14,6 +14,13 @@ class StorageDriver:
                     UNIQUE(name)
                 )
             """)
+            self.conn.execute("""
+                CREATE TABLE IF NOT EXISTS records (
+                    difficulty TEXT PRIMARY KEY,
+                    value INTEGER,
+                    UNIQUE(difficulty)
+                )
+            """)
     
     def get_setting(self, name: str, default: bool) -> bool:
         cursor = self.conn.execute("""
@@ -28,6 +35,21 @@ class StorageDriver:
             self.conn.execute("""
                 INSERT OR REPLACE INTO settings (name, value) VALUES (?, ?)
             """, (name, val))
+
+    def get_difficulty_record(self, difficulty: int):
+        cursor = self.conn.execute("""
+            SELECT value FROM records WHERE difficulty = ?
+        """, (difficulty,))
+        result = cursor.fetchone()
+        return 0 if result == None else int(result[0])
+
+    def set_difficulty_record(self, difficulty: int, value: int):
+        record = self.get_difficulty_record(difficulty)
+        if (record >= value): return
+        with self.conn:
+            self.conn.execute("""
+                INSERT OR REPLACE INTO records (difficulty, value) VALUES (?, ?)
+            """, (difficulty, value))
     
     def close(self):
         self.conn.close()
