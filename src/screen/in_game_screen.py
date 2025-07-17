@@ -273,7 +273,6 @@ class InGameScreen(GameScreen):
         self.back_button.on_screen_click()
 
     def add_points(self):
-        print(self.elapsed_time)
         base_points = max(0, self.difficulty.game_time - self.elapsed_time)
         self.points += int(base_points * self.difficulty.multiplier)
 
