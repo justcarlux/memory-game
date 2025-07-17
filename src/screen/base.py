@@ -2,8 +2,14 @@ from abc import ABC, abstractmethod
 from game import Game
 from util.easing import ease_in_out_cubic
 
+ENTER_TRANSITION_TOTAL_TICKS = 50
+ENTER_TRANSITION_STEP = 12
+
+EXIT_TRANSITION_TOTAL_TICKS = 60
+EXIT_TRANSITION_STEP = 12
+
 class GameScreen(ABC):
-    def __init__(self, game: Game, enter_transition_total_ticks: int, enter_transition_step: int, exit_transition_total_ticks: int, exit_transition_step: int):
+    def __init__(self, game: Game, enter_transition_total_ticks: int = ENTER_TRANSITION_TOTAL_TICKS, enter_transition_step: int = ENTER_TRANSITION_STEP, exit_transition_total_ticks: int = ENTER_TRANSITION_TOTAL_TICKS, exit_transition_step: int = EXIT_TRANSITION_STEP):
         self.game = game
         self._hiding = False
         self.hidden = False

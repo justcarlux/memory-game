@@ -5,13 +5,12 @@ from manager.sounds import SoundManager
 from background import GameBackground
 from manager.settings import SettingsManager
         
-pygame.init()
-
 INITIAL_MUSIC_DELAY = 40
 INITIAL_MAIN_MENU_TRANSITION_DELAY = 20
 
 class Game:
     def __init__(self):
+        pygame.init()
         self.display = pygame.display.set_mode((900, 650))
         self.is_running = True
         self.clock = pygame.time.Clock()

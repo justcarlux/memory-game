@@ -1,28 +1,17 @@
 import pygame
-from util.asset_paths import image_path
 from screen.base import GameScreen
 from game import Game, GameScreen
 from screen.options_screen import OptionsScreen
 from screen.component.button import Button, Alignment
-from screen.in_game_screen import InGameScreen
-
-ENTER_TRANSITION_TOTAL_TICKS = 50
-ENTER_TRANSITION_STEP = 12
-
-EXIT_TRANSITION_TOTAL_TICKS = 60
-EXIT_TRANSITION_STEP = 12
+from screen.game_difficulty_screen import GameDifficultyScreen
+from screen.instructions_screen import InstructionsScreen
+from screen.component.game_title import GameTitleImage
 
 class MainMenuScreen(GameScreen):
     def __init__(self, game: Game, transition_delay: int = 0):
-        super().__init__(
-            game,
-            ENTER_TRANSITION_TOTAL_TICKS,
-            ENTER_TRANSITION_STEP,
-            EXIT_TRANSITION_TOTAL_TICKS,
-            EXIT_TRANSITION_STEP
-        )
+        super().__init__(game)
         self.__transition_delay = transition_delay
-        self.title = MainMenuTitle(self)
+        self.game_title_image = GameTitleImage(self)
         self.button_group = MainMenuButtonGroup(self, 230, 30)
 
     def draw(self):
@@ -34,7 +23,7 @@ class MainMenuScreen(GameScreen):
             self.hidden = True
             return
             
-        self.title.draw(current_y_offset)
+        self.game_title_image.draw(current_y_offset)
         self.button_group.draw(current_y_offset)
         
         if self.button_group.is_mouse_hovering and not self.is_transitioning():
@@ -45,29 +34,19 @@ class MainMenuScreen(GameScreen):
     def on_click(self):
         self.button_group.on_click()
 
-class MainMenuTitle:
-    def __init__(self, screen: MainMenuScreen):
-        self.screen = screen
-        self.image = pygame.image.load(image_path("title.png"))
-        self.x = self.screen.game.display.get_width() / 2 - self.image.get_width() / 2
-        self.y = 60
-        
-    def draw(self, y_offset: float):
-        self.screen.game.display.blit(self.image, (self.x, self.y + y_offset))
-
 class MainMenuPlayButton(Button):
     def __init__(self, screen: MainMenuScreen):
         super().__init__(screen, "Jugar", Alignment.CENTER) 
         
     def on_click(self):
-        self.screen.game.switch_screen(InGameScreen(self.screen.game))
+        self.screen.game.switch_screen(GameDifficultyScreen(self.screen.game))
         
-class MainMenuTimeTrialButton(Button):
+class MainMenuInstructionsButton(Button):
     def __init__(self, screen: MainMenuScreen):
-        super().__init__(screen, "Contrarreloj", Alignment.CENTER) 
+        super().__init__(screen, "Instrucciones", Alignment.CENTER) 
         
     def on_click(self):
-        print("Time trial")
+        self.screen.game.switch_screen(InstructionsScreen(self.screen.game))
         
 class MainMenuSettingsButton(Button):
     def __init__(self, screen: MainMenuScreen):
@@ -92,7 +71,7 @@ class MainMenuButtonGroup():
         self.is_mouse_hovering = False
         self.buttons = (
             MainMenuPlayButton(screen),
-            MainMenuTimeTrialButton(screen),
+            MainMenuInstructionsButton(screen),
             MainMenuSettingsButton(screen),
             MainMenuExitButton(screen)
         )

@@ -5,8 +5,8 @@ from abc import abstractmethod
 from screen.component.button import Button, DEFAULT_BUTTON_BG_COLOR, DEFAULT_HIGHLIGHT_COLOR, DEFAULT_BORDER_COLOR, Alignment
 
 class Checkbox(Button):
-    def __init__(self, screen: GameScreen, label: str, alignment: Alignment, bg_color: tuple[int, int, int] = DEFAULT_BUTTON_BG_COLOR, highlight_color: tuple[int, int, int] = DEFAULT_HIGHLIGHT_COLOR, border_color: tuple[int, int, int] = DEFAULT_BORDER_COLOR, border_thickness: int = 4, margin: int = 10):
-        super().__init__(screen, label, alignment, bg_color, highlight_color, border_color, border_thickness) 
+    def __init__(self, screen: GameScreen, label: str, alignment: Alignment, text_size: int = 27, bg_color: tuple[int, int, int] = DEFAULT_BUTTON_BG_COLOR, highlight_color: tuple[int, int, int] = DEFAULT_HIGHLIGHT_COLOR, border_color: tuple[int, int, int] = DEFAULT_BORDER_COLOR, border_thickness: int = 4, margin: int = 10):
+        super().__init__(screen, label, alignment, text_size, bg_color, highlight_color, border_color, border_thickness) 
         self.checked_image = pygame.image.load(image_path("checkbox_checked.png"))
         self.unchecked_image = pygame.image.load(image_path("checkbox_unchecked.png"))
         self.image_coords = (0, 0)

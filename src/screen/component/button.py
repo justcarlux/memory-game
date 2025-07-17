@@ -14,9 +14,9 @@ DEFAULT_BORDER_COLOR = (255, 255, 255)
 DEFAULT_BORDER_THICKNESS = 4
 
 class Button(ABC):
-    def __init__(self, screen: GameScreen, label: str, alignment: Alignment, bg_color: tuple[int, int, int] = DEFAULT_BUTTON_BG_COLOR, highlight_color: tuple[int, int, int] = DEFAULT_HIGHLIGHT_COLOR, border_color: tuple[int, int, int] = DEFAULT_BORDER_COLOR, border_thickness: int = DEFAULT_BORDER_THICKNESS):
+    def __init__(self, screen: GameScreen, label: str, alignment: Alignment, text_size: int = 27, bg_color: tuple[int, int, int] = DEFAULT_BUTTON_BG_COLOR, highlight_color: tuple[int, int, int] = DEFAULT_HIGHLIGHT_COLOR, border_color: tuple[int, int, int] = DEFAULT_BORDER_COLOR, border_thickness: int = DEFAULT_BORDER_THICKNESS):
         self.screen = screen
-        self.font = screen.game.font_manager.get("comfortaa-bold", 27)
+        self.font = screen.game.font_manager.get("comfortaa-bold", text_size)
         self.text_surface = self.font.render(label, True, (255, 255, 255))
         self.alignment = alignment
         self.border_radius = 0
