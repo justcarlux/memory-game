@@ -6,7 +6,7 @@ ENTER_TRANSITION_TOTAL_TICKS = 50
 ENTER_TRANSITION_STEP = 12
 
 EXIT_TRANSITION_TOTAL_TICKS = 60
-EXIT_TRANSITION_STEP = 12
+EXIT_TRANSITION_STEP = 14
 
 class GameScreen(ABC):
     def __init__(self, game: Game, enter_transition_total_ticks: int = ENTER_TRANSITION_TOTAL_TICKS, enter_transition_step: int = ENTER_TRANSITION_STEP, exit_transition_total_ticks: int = ENTER_TRANSITION_TOTAL_TICKS, exit_transition_step: int = EXIT_TRANSITION_STEP):

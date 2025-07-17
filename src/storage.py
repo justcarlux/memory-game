@@ -44,8 +44,6 @@ class StorageDriver:
         return 0 if result == None else int(result[0])
 
     def set_difficulty_record(self, difficulty: int, value: int):
-        record = self.get_difficulty_record(difficulty)
-        if (record >= value): return
         with self.conn:
             self.conn.execute("""
                 INSERT OR REPLACE INTO records (difficulty, value) VALUES (?, ?)

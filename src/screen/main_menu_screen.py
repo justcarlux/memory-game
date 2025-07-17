@@ -19,7 +19,7 @@ class MainMenuScreen(GameScreen):
             self.__transition_delay -= 1
             return
         current_y_offset = self.transition_offset()
-        if (current_y_offset < -400 and self._hiding):
+        if (current_y_offset < -600 and self._hiding):
             self.hidden = True
             return
             

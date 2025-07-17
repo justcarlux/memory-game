@@ -78,14 +78,14 @@ class OptionsInputGroup():
 
 
 class OptionsScreen(GameScreen):
-    def __init__(self, game: Game, transition_delay: int = 0):
+    def __init__(self, game: Game):
         super().__init__(game)
         self.options_title_image = HorizontallyAlignedImage(self, "options_title.png", 60)
         self.input_group = OptionsInputGroup(self, 200, 40)
 
     def draw(self):
         current_y_offset = self.transition_offset()
-        if (current_y_offset < -400 and self._hiding):
+        if (current_y_offset < -600 and self._hiding):
             self.hidden = True
             return
         

@@ -16,7 +16,7 @@ class GameDifficultyScreen(GameScreen):
 
     def draw(self):
         current_y_offset = self.transition_offset()
-        if (current_y_offset < -400 and self._hiding):
+        if (current_y_offset < -600 and self._hiding):
             self.hidden = True
             return
             

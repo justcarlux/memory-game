@@ -7,6 +7,7 @@ from game import Game, GameScreen
 from util.easing import ease_in_out_cubic
 from screen.component.back_to_main_menu_button import BackToMainMenuButton
 from game import GAME_TIMER_EVENT
+from screen.time_out_screen import TimeOutScreen
 
 CARD_FLIPPING_PROGRESS_STEP = 4
 
@@ -185,12 +186,12 @@ class InGameInfoDisplay:
         self.screen = screen
         self.font = screen.game.font_manager.get("comfortaa-bold", 25)
 
-    def draw(self):
+    def draw(self, y_offset: float):
         self.__update_info()
-        self.__draw_centered_text(self.time_left, 30)
-        self.__draw_centered_text(self.points, 60)
+        self.__draw_centered_text(self.time_left, 30 + y_offset)
+        self.__draw_centered_text(self.points, 60 + y_offset)
 
-    def __draw_centered_text(self, label: str, y: int):
+    def __draw_centered_text(self, label: str, y: float):
         text = self.font.render(label, True, (255, 255, 255))
         x = self.screen.game.display.get_width() / 2 - text.get_width() / 2
         self.screen.game.display.blit(text, (x, y))
@@ -216,7 +217,7 @@ class InGameDifficulty(Enum):
 
 class InGameScreen(GameScreen):
     def __init__(self, game: Game, difficulty: InGameDifficulty):
-        super().__init__(game)
+        super().__init__(game, 50, 14)
         self.difficulty = difficulty
         self.card_group = InGameCardGroup(self, difficulty.rows, difficulty.columns)
         self.empty_card_image = pygame.image.load(image_path("empty_card.png"))
@@ -234,9 +235,16 @@ class InGameScreen(GameScreen):
 
     def draw(self):
         current_y_offset = self.transition_offset()
-        if (current_y_offset < -400 and self._hiding):
+        if (current_y_offset < -600 and self._hiding):
             self.hidden = True
             return
+        if (not self.is_transitioning() and self.time_left == 0):
+            stored_points = self.game.storage.get_difficulty_record(self.difficulty.value)
+            new_record = self.points > stored_points
+            if (new_record):
+                self.game.storage.set_difficulty_record(self.difficulty.value, self.points)
+            self.game.switch_screen(TimeOutScreen(self.game, self.points, new_record))
+            
         if (self.card_display_time == 0):
             self.card_display_time = -1
             self.card_group.flip_all()
@@ -249,7 +257,7 @@ class InGameScreen(GameScreen):
         if (self.card_display_time > 0):
             self.card_display_time -= 1
 
-        self.game_info_display.draw()
+        self.game_info_display.draw(current_y_offset)
         self.card_group.draw(current_y_offset)
 
         self.back_button.is_mouse_hovering = self.back_button.rect.collidepoint(pygame.mouse.get_pos()) if not self.is_transitioning() else False
