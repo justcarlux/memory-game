@@ -4,6 +4,7 @@ from manager.fonts import FontManager
 from manager.sounds import SoundManager
 from screen.component.background import GameBackground
 from manager.settings import SettingsManager
+from handler.konami_code import KonamiCodeHandler
 
 INITIAL_MUSIC_DELAY = 40
 INITIAL_MAIN_MENU_TRANSITION_DELAY = 20
@@ -27,6 +28,7 @@ class Game:
             self, INITIAL_MAIN_MENU_TRANSITION_DELAY if self.settings.transitions_enabled else 0)
         self.__next_screen: GameScreen | None = None
         self.__music_tick_delay_left = INITIAL_MUSIC_DELAY if self.settings.music_enabled else -1
+        self.konami_code_handler = KonamiCodeHandler(self.sound_manager)
 
     def handle_initial_music_playback(self):
         if (self.__music_tick_delay_left > 0):
@@ -71,6 +73,8 @@ class Game:
             elif event.type == GAME_TIMER_EVENT:
                 if isinstance(self.__current_screen, InGameScreen):
                     self.__current_screen.on_game_timer_tick()
+            elif event.type == pygame.KEYDOWN:
+                self.konami_code_handler.handle_key(event.key)
                 
     def switch_screen(self, screen: "GameScreen"):
         if (self.settings.transitions_enabled):

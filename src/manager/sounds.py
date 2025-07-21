@@ -9,7 +9,8 @@ class SoundManager:
         self.settings = settings
         pygame.mixer.music.load(music_path(MUSIC_FILENAME), "mp3")
         self.sfx = {
-            "click": pygame.mixer.Sound(sfx_path("click.wav"))
+            "click": pygame.mixer.Sound(sfx_path("click.wav")),
+            "goku": pygame.mixer.Sound(sfx_path("goku.mp3")),
         }
         
     def play_music(self):
