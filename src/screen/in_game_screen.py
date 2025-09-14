@@ -201,7 +201,7 @@ class InGameInfoDisplay:
     def __update_info(self):
         time_left_minutes = self.screen.time_left // 60
         time_left_seconds = self.screen.time_left - (time_left_minutes * 60)
-        self.time_left = f"{str.rjust(str(time_left_minutes), 2, "0")}:{str.rjust(str(time_left_seconds), 2, "0")}"
+        self.time_left = f"{str.rjust(str(time_left_minutes), 2, '0')}:{str.rjust(str(time_left_seconds), 2, '0')}"
         self.points = f"Puntos: {self.screen.points}"
         self.level = f"Nivel: {self.screen.level}"
 
