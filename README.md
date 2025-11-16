@@ -1,5 +1,7 @@
 # 🎮 memory-game
 
+<img width="902" height="682" alt="image" src="https://github.com/user-attachments/assets/5025758c-26fe-4626-aa48-b1964d4a41b5" />
+
 ## Español:
 
 **¡Bienvenido!** Este repositorio contiene el código fuente para el proyecto final de la asignatura _Objetos y abstracción de datos_ de la UDO (_Universidad de Oriente_) en la carrera de _Ingeniería en Computación_, realizado en conjunto con mi compañero: [ChrisPolyec](https://github.com/ChrisPolyec)
